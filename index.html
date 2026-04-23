@@ -27,12 +27,9 @@
       padding:10px;
     }
     .wrap {
-      background:rgba(255,255,255,0.05);
-      backdrop-filter:blur(10px);
-      border:1px solid rgba(255,255,255,0.1);
-      border-radius:24px;
-      padding:20px;
-      width:420px; max-width:100%;
+      background:rgba(255,255,255,0.05); backdrop-filter:blur(10px);
+      border:1px solid rgba(255,255,255,0.1); border-radius:24px;
+      padding:20px; width:420px; max-width:100%;
       box-shadow:0 20px 60px rgba(0,0,0,0.5);
     }
     h1 { text-align:center; color:white; font-size:1.6em; margin-bottom:4px; letter-spacing:2px; }
@@ -50,13 +47,15 @@
     .btn-start { background:linear-gradient(135deg,#00b4d8,#0077b6); }
     .btn-end   { background:linear-gradient(135deg,#ef476f,#d62828); }
     .btn-rank  { background:linear-gradient(135deg,#f59e0b,#ef4444); }
-    .status { text-align:center; font-size:1em; font-weight:bold; color:white; margin-bottom:12px; min-height:24px; letter-spacing:1px; }
+    .status { text-align:center; font-size:1em; font-weight:bold; color:white; margin-bottom:6px; min-height:24px; letter-spacing:1px; }
     .status.watching  { color:#00d4ff; }
     .status.your-turn { color:#ffd60a; }
     .status.correct   { color:#06d6a0; }
     .status.wrong     { color:#ef476f; }
     .status.gameover  { color:#ef476f; }
     .status.idle      { color:rgba(255,255,255,0.6); }
+    .stage-badge { text-align:center; margin-bottom:8px; font-size:0.82em; color:rgba(255,255,255,0.5); }
+    .seq-count { display:inline-block; background:rgba(255,255,255,0.1); border-radius:20px; padding:2px 12px; }
     .grid { display:grid; grid-template-columns:repeat(5,1fr); gap:6px; margin-bottom:14px; }
     .tile {
       aspect-ratio:1; border-radius:10px; cursor:pointer;
@@ -65,19 +64,9 @@
     }
     .tile::after { content:''; position:absolute; inset:0; background:rgba(255,255,255,0.15); opacity:0; transition:opacity 0.1s; }
     .tile:hover::after { opacity:1; }
-    .tile.flash { transform:scale(1.08); border-color:white; box-shadow:0 0 20px currentColor, 0 0 40px currentColor; filter:brightness(1.8); }
+    .tile.flash { transform:scale(1.08); border-color:white; box-shadow:0 0 20px currentColor,0 0 40px currentColor; filter:brightness(1.8); }
     .tile.pressed { transform:scale(0.93); filter:brightness(1.5); }
     .tile.disabled { cursor:default; pointer-events:none; }
-    /* 단계마다 눌러야 할 타일 강조 */
-    .tile.target {
-      border:2px solid rgba(255,255,255,0.6);
-      box-shadow:0 0 10px rgba(255,255,255,0.3);
-      animation:targetPulse 1s infinite alternate;
-    }
-    @keyframes targetPulse {
-      from { box-shadow:0 0 6px rgba(255,255,255,0.2); }
-      to   { box-shadow:0 0 18px rgba(255,255,255,0.6); }
-    }
     .progress-wrap { background:rgba(255,255,255,0.08); border-radius:10px; height:8px; margin-bottom:14px; overflow:hidden; }
     .progress-bar { height:100%; border-radius:10px; background:linear-gradient(to right,#00d4ff,#ffd60a); transition:width 0.3s ease; }
     .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.65); display:none; align-items:center; justify-content:center; z-index:500; }
@@ -107,54 +96,30 @@
     .rtable td { padding:8px 6px; font-size:0.85em; text-align:center; color:white; border-bottom:1px solid rgba(255,255,255,0.05); }
     .rtable tr.mine td { color:#ffd60a; font-weight:bold; }
     .no-rank { text-align:center; color:rgba(255,255,255,0.4); padding:20px; }
-
-    /* 단계 안내 배지 */
-    .stage-badge {
-      text-align:center; margin-bottom:8px;
-      font-size:0.82em; color:rgba(255,255,255,0.5);
-      letter-spacing:1px;
-    }
-    .seq-count {
-      display:inline-block;
-      background:rgba(255,255,255,0.1);
-      border-radius:20px; padding:2px 12px;
-    }
   </style>
 </head>
 <body>
 <div class="wrap">
   <h1>🧠 사이먼</h1>
   <div class="subtitle">매 단계마다 새로운 순서를 기억하세요</div>
-
   <div class="info-row">
-    <div class="info-box">
-      <div class="info-label">단계</div>
-      <div class="info-value" id="stageVal">-</div>
-    </div>
-    <div class="info-box">
-      <div class="info-label">최고 단계</div>
-      <div class="info-value" id="bestVal">-</div>
-    </div>
+    <div class="info-box"><div class="info-label">단계</div><div class="info-value" id="stageVal">-</div></div>
+    <div class="info-box"><div class="info-label">최고 단계</div><div class="info-value" id="bestVal">-</div></div>
     <div class="info-box">
       <div class="info-label">목숨</div>
       <div class="life-box" id="lifeBox">
-        <span class="heart">❤️</span>
-        <span class="heart">❤️</span>
-        <span class="heart">❤️</span>
+        <span class="heart">❤️</span><span class="heart">❤️</span><span class="heart">❤️</span>
       </div>
     </div>
   </div>
-
   <div class="btn-row">
     <button class="gbtn btn-start" id="startBtn">▶ 시작</button>
     <button class="gbtn btn-rank"  id="rankBtn">🏆 랭킹</button>
     <button class="gbtn btn-end"   id="endBtn">⏹ 종료</button>
   </div>
-
   <div class="status idle" id="status">시작 버튼을 눌러주세요</div>
   <div class="stage-badge" id="stageBadge"></div>
 
-  <!-- 실패 팝업 -->
   <div class="modal-overlay" id="failOverlay">
     <div class="modal-box">
       <div class="fail-title">❌ 틀렸어요!</div>
@@ -163,7 +128,6 @@
     </div>
   </div>
 
-  <!-- 게임오버 팝업 -->
   <div class="modal-overlay" id="gameoverOverlay">
     <div class="modal-box">
       <div class="gameover-title" id="gameoverTitle">⏹ 게임 종료</div>
@@ -180,11 +144,9 @@
   <div class="progress-wrap">
     <div class="progress-bar" id="progressBar" style="width:0%"></div>
   </div>
-
   <div class="grid" id="grid"></div>
 </div>
 
-<!-- 랭킹 팝업 -->
 <div class="overlay" id="rankOverlay">
   <div class="popup">
     <div class="popup-head">
@@ -196,148 +158,84 @@
 </div>
 
 <script>
-// ── 칼림바 사운드 ─────────────────────────────────
+// ── 오디오 컨텍스트 ───────────────────────────────
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-// 모바일 대응: 첫 터치/클릭 시 AudioContext resume
-function resumeAudio(){
-  if(audioCtx.state === 'suspended') audioCtx.resume();
-}
-document.addEventListener('touchstart', resumeAudio, {once:false});
-document.addEventListener('click', resumeAudio, {once:false});
-
-// ── 배경 음악 ─────────────────────────────────────
-// Am 펜타토닉 베이스 루프 (은은하고 잔잔한 느낌)
-const BGM_NOTES = [
-  // 음정(Hz), 박자길이(초)
-  [110.00, 0.6], // A2
-  [130.81, 0.4], // C3
-  [146.83, 0.5], // D3
-  [164.81, 0.3], // E3
-  [130.81, 0.5], // C3
-  [110.00, 0.4], // A2
-  [ 98.00, 0.6], // G2
-  [110.00, 0.5], // A2
-  [123.47, 0.4], // B2
-  [130.81, 0.6], // C3
-  [110.00, 0.4], // A2
-  [ 98.00, 0.8], // G2
+// ── 칼림바 (타일 클릭음) ─────────────────────────
+const KALIMBA_NOTES = [
+  261.63,293.66,329.63,392.00,440.00,
+  523.25,587.33,659.25,783.99,880.00,
+  1046.50,1174.66,1318.51,1567.98,1760.00,
+  349.23,415.30,466.16,369.99,311.13,
+  554.37,622.25,698.46,830.61,932.33,
 ];
+function playKalimba(idx){
+  if(audioCtx.state==='suspended') audioCtx.resume();
+  const freq=KALIMBA_NOTES[idx]||440;
+  const now=audioCtx.currentTime;
+  const master=audioCtx.createGain();
+  master.gain.setValueAtTime(0.45,now);
+  master.connect(audioCtx.destination);
+  [[freq,'sine',0.6,1.8],[freq,'square',0.04,0.3],[freq*2,'sine',0.15,0.6]].forEach(([f,t,g,d])=>{
+    const o=audioCtx.createOscillator(), gn=audioCtx.createGain();
+    o.type=t; o.frequency.setValueAtTime(f,now);
+    gn.gain.setValueAtTime(g,now); gn.gain.exponentialRampToValueAtTime(0.001,now+d);
+    o.connect(gn); gn.connect(master);
+    o.start(now); o.stop(now+d);
+  });
+}
 
-let bgmPlaying = false;
-let bgmTimeout = null;
-let bgmIdx = 0;
+// ── 피아노 배경음악 ───────────────────────────────
+// C장조 잔잔한 멜로디 루프
+const BGM = [
+  [261.63,0.5],[293.66,0.5],[329.63,0.5],[392.00,0.5],
+  [440.00,0.5],[392.00,0.5],[349.23,0.5],[329.63,0.5],
+  [293.66,0.5],[261.63,0.8],[246.94,0.5],[261.63,0.5],
+  [293.66,0.5],[329.63,0.5],[392.00,0.8],[392.00,0.5],
+  [440.00,0.5],[493.88,0.5],[523.25,0.8],[440.00,0.5],
+  [392.00,0.5],[349.23,0.5],[329.63,0.5],[293.66,0.8],
+  [261.63,0.6],[293.66,0.4],[329.63,0.6],[261.63,1.0],
+];
+let bgmOn=false, bgmTid=null, bgmIdx=0;
 
-function playBgmNote(){
-  if(!bgmPlaying) return;
-  const [freq, dur] = BGM_NOTES[bgmIdx % BGM_NOTES.length];
+function playPianoNote(){
+  if(!bgmOn) return;
+  const [freq,dur]=BGM[bgmIdx%BGM.length];
   bgmIdx++;
+  const now=audioCtx.currentTime;
+  const master=audioCtx.createGain();
+  master.gain.setValueAtTime(0.28,now);
+  master.connect(audioCtx.destination);
+  // 사인 + 삼각파 → 피아노 톤
+  const o1=audioCtx.createOscillator(), g1=audioCtx.createGain();
+  o1.type='sine'; o1.frequency.setValueAtTime(freq,now);
+  g1.gain.setValueAtTime(0.7,now);
+  g1.gain.exponentialRampToValueAtTime(0.001,now+dur+0.5);
+  o1.connect(g1); g1.connect(master);
+  o1.start(now); o1.stop(now+dur+0.6);
 
-  const now = audioCtx.currentTime;
+  const o2=audioCtx.createOscillator(), g2=audioCtx.createGain();
+  o2.type='triangle'; o2.frequency.setValueAtTime(freq,now);
+  g2.gain.setValueAtTime(0.3,now);
+  g2.gain.exponentialRampToValueAtTime(0.001,now+dur*0.4);
+  o2.connect(g2); g2.connect(master);
+  o2.start(now); o2.stop(now+dur*0.4+0.1);
 
-  // 부드러운 사인파 베이스
-  const osc  = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  const filter = audioCtx.createBiquadFilter();
-
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime(freq, now);
-
-  // 로우패스 필터로 둔탁하고 따뜻하게
-  filter.type = 'lowpass';
-  filter.frequency.setValueAtTime(400, now);
-  filter.Q.setValueAtTime(1, now);
-
-  // 은은한 볼륨 + 부드러운 어택/릴리즈
-  gain.gain.setValueAtTime(0, now);
-  gain.gain.linearRampToValueAtTime(0.10, now + 0.08);
-  gain.gain.setValueAtTime(0.10, now + dur * 0.6);
-  gain.gain.linearRampToValueAtTime(0, now + dur);
-
-  osc.connect(filter);
-  filter.connect(gain);
-  gain.connect(audioCtx.destination);
-
-  osc.start(now);
-  osc.stop(now + dur);
-
-  bgmTimeout = setTimeout(playBgmNote, dur * 1000);
+  bgmTid=setTimeout(playPianoNote, dur*1000);
 }
 
 function startBgm(){
-  if(bgmPlaying) return;
-  bgmPlaying = true;
-  bgmIdx = 0;
-  playBgmNote();
+  bgmOn=false;
+  if(bgmTid){ clearTimeout(bgmTid); bgmTid=null; }
+  bgmOn=true; bgmIdx=0;
+  audioCtx.resume().then(()=>{ if(bgmOn) playPianoNote(); });
 }
-
 function stopBgm(){
-  bgmPlaying = false;
-  if(bgmTimeout) clearTimeout(bgmTimeout);
+  bgmOn=false;
+  if(bgmTid){ clearTimeout(bgmTid); bgmTid=null; }
 }
 
-// 첫 인터랙션 시 BGM 시작
-let bgmStarted = false;
-function tryStartBgm(){
-  if(!bgmStarted){
-    bgmStarted = true;
-    audioCtx.resume().then(()=>startBgm());
-  }
-}
-
-// 25개 타일에 칼림바 음계 배정 (C4~C6 범위 펜타토닉)
-const NOTES = [
-  261.63, 293.66, 329.63, 392.00, 440.00, // C4 D4 E4 G4 A4
-  523.25, 587.33, 659.25, 783.99, 880.00, // C5 D5 E5 G5 A5
-  1046.50,1174.66,1318.51,1567.98,1760.00, // C6 D6 E6 G6 A6
-  349.23, 415.30, 466.16, 369.99, 311.13, // F4 G#4 A#4 F#4 D#4
-  554.37, 622.25, 698.46, 830.61, 932.33, // C#5 D#5 F5 G#5 A#5
-];
-
-function playKalimba(idx){
-  const freq = NOTES[idx] || 440;
-  const now  = audioCtx.currentTime;
-
-  // 메인 톤 (사인파 + 약한 사각파 믹스 → 칼림바 느낌)
-  const osc1 = audioCtx.createOscillator();
-  const osc2 = audioCtx.createOscillator();
-  const gain1 = audioCtx.createGain();
-  const gain2 = audioCtx.createGain();
-  const master = audioCtx.createGain();
-
-  osc1.type = 'sine';
-  osc1.frequency.setValueAtTime(freq, now);
-
-  osc2.type = 'square';
-  osc2.frequency.setValueAtTime(freq, now);
-
-  // 칼림바 특유의 빠른 어택 + 긴 감쇠
-  gain1.gain.setValueAtTime(0.6, now);
-  gain1.gain.exponentialRampToValueAtTime(0.001, now + 1.8);
-
-  gain2.gain.setValueAtTime(0.04, now);
-  gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
-
-  master.gain.setValueAtTime(0.5, now);
-
-  osc1.connect(gain1); gain1.connect(master);
-  osc2.connect(gain2); gain2.connect(master);
-  master.connect(audioCtx.destination);
-
-  osc1.start(now); osc1.stop(now + 1.8);
-  osc2.start(now); osc2.stop(now + 0.3);
-
-  // 배음 (2배음 살짝 추가)
-  const osc3 = audioCtx.createOscillator();
-  const gain3 = audioCtx.createGain();
-  osc3.type = 'sine';
-  osc3.frequency.setValueAtTime(freq * 2, now);
-  gain3.gain.setValueAtTime(0.15, now);
-  gain3.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
-  osc3.connect(gain3); gain3.connect(master);
-  osc3.start(now); osc3.stop(now + 0.6);
-}
-
+// ── 타일 ─────────────────────────────────────────
 const COLORS=[
   '#ef476f','#f77f00','#fcbf49','#eae2b7','#06d6a0',
   '#00b4d8','#0077b6','#7b2d8b','#c77dff','#ff9f1c',
@@ -345,17 +243,13 @@ const COLORS=[
   '#a8dadc','#457b9d','#e9c46a','#f4a261','#264653',
   '#6a4c93','#1982c4','#8ac926','#ff595e','#ffca3a',
 ];
-const ROWS=5,COLS=5,TOTAL=25,MAX_LIVES=3;
-const FLASH_ON=400, FLASH_OFF=200;
-
-// 단계별 시퀀스 길이: 1단계=2개, 매 단계+1개씩
-const seqLen = stage => stage + 1;
+const TOTAL=25, MAX_LIVES=3, FLASH_ON=400, FLASH_OFF=200;
+const seqLen=stage=>stage+1;
 
 let sequence=[],playerSeq=[],stage=0,lives=MAX_LIVES;
 let isWatching=false,isPlaying=false,gameOver=false;
 let bestStage=0,myRankId=null;
 
-// 타일 생성
 const gridEl=document.getElementById('grid');
 const tiles=[];
 for(let i=0;i<TOTAL;i++){
@@ -363,39 +257,19 @@ for(let i=0;i<TOTAL;i++){
   t.className='tile disabled';
   t.style.background=COLORS[i];
   t.style.color=COLORS[i];
-  t.dataset.i=i;
   t.addEventListener('click',()=>onTileClick(i));
-  gridEl.appendChild(t);
-  tiles.push(t);
+  gridEl.appendChild(t); tiles.push(t);
 }
 
-function setStatus(msg,cls=''){
-  const el=document.getElementById('status');
-  el.textContent=msg; el.className='status '+(cls||'idle');
-}
-function setStageBadge(txt){
-  document.getElementById('stageBadge').innerHTML=txt?`<span class="seq-count">${txt}</span>`:'';
-}
+function setStatus(msg,cls=''){ const el=document.getElementById('status'); el.textContent=msg; el.className='status '+(cls||'idle'); }
+function setStageBadge(txt){ document.getElementById('stageBadge').innerHTML=txt?`<span class="seq-count">${txt}</span>`:''; }
 function updateInfo(){
   document.getElementById('stageVal').textContent=stage||'-';
   document.getElementById('bestVal').textContent=bestStage||'-';
   document.querySelectorAll('.heart').forEach((h,i)=>h.classList.toggle('lost',i>=lives));
   document.getElementById('progressBar').style.width=stage>0?Math.min((stage/30)*100,100)+'%':'0%';
 }
-function setTilesDisabled(v){
-  tiles.forEach(t=>t.classList.toggle('disabled',v));
-}
-// 남은 눌러야 할 타일 강조
-function highlightRemaining(){
-  tiles.forEach(t=>t.classList.remove('target'));
-  // 아직 안 누른 것들
-  for(let i=playerSeq.length;i<sequence.length;i++){
-    tiles[sequence[i]].classList.add('target');
-  }
-}
-function clearHighlight(){
-  tiles.forEach(t=>t.classList.remove('target'));
-}
+function setTilesDisabled(v){ tiles.forEach(t=>t.classList.toggle('disabled',v)); }
 
 function startGame(){
   sequence=[];playerSeq=[];stage=0;lives=MAX_LIVES;gameOver=false;myRankId=null;
@@ -403,44 +277,32 @@ function startGame(){
   document.getElementById('gameoverOverlay').classList.remove('show');
   document.getElementById('nameInput').value='';
   document.getElementById('retryMsgGo').style.display='none';
-  setStageBadge('');
-  updateInfo();
-  nextStage();
+  setStageBadge(''); updateInfo(); nextStage();
 }
 
 function nextStage(){
-  stage++;
-  if(stage>bestStage) bestStage=stage;
-  updateInfo();
-
-  // ★ 매 단계마다 완전히 새로운 시퀀스 생성 (중복 없이)
+  stage++; if(stage>bestStage) bestStage=stage; updateInfo();
   const len=seqLen(stage);
   const pool=[...Array(TOTAL).keys()];
   sequence=[];
   for(let i=0;i<len;i++){
-    const ri=Math.floor(Math.random()*(pool.length));
-    sequence.push(pool[ri]);
-    pool.splice(ri,1); // 중복 제거
+    const ri=Math.floor(Math.random()*pool.length);
+    sequence.push(pool[ri]); pool.splice(ri,1);
   }
   playerSeq=[];
-
   setTilesDisabled(true);
-  clearHighlight();
   setStageBadge(`단계 ${stage} — ${len}개 순서`);
   setStatus(`👀 단계 ${stage} — 잘 보세요! (${len}개)`,'watching');
   setTimeout(()=>playSequence(),600);
 }
 
 function playSequence(){
-  isWatching=true;
-  let i=0;
+  isWatching=true; let i=0;
   function next(){
     if(i>=sequence.length){
-      isWatching=false;
-      setTilesDisabled(false);
+      isWatching=false; setTilesDisabled(false);
       setStatus(`🖱️ 순서대로 눌러주세요! (${sequence.length}개)`,'your-turn');
-      isPlaying=true;
-      return;
+      isPlaying=true; return;
     }
     flashTile(sequence[i],()=>{ i++; setTimeout(next,FLASH_OFF); });
   }
@@ -448,69 +310,46 @@ function playSequence(){
 }
 
 function flashTile(idx,cb){
-  const t=tiles[idx];
-  t.classList.add('flash');
+  const t=tiles[idx]; t.classList.add('flash');
   setTimeout(()=>{ t.classList.remove('flash'); if(cb) cb(); },FLASH_ON);
 }
 
 function onTileClick(idx){
   if(!isPlaying||isWatching||gameOver) return;
   playKalimba(idx);
-  const t=tiles[idx];
-  t.classList.add('pressed');
+  const t=tiles[idx]; t.classList.add('pressed');
   setTimeout(()=>t.classList.remove('pressed'),150);
-
   playerSeq.push(idx);
   const pos=playerSeq.length-1;
-
-  if(playerSeq[pos]!==sequence[pos]){
-    wrongAnswer(); return;
-  }
-
+  if(playerSeq[pos]!==sequence[pos]){ wrongAnswer(); return; }
   if(playerSeq.length===sequence.length){
-    // 단계 클리어
-    isPlaying=false;
-    clearHighlight();
-    setTilesDisabled(true);
-    setStatus(`✅ 정답! 다음 단계로...`,'correct');
+    isPlaying=false; setTilesDisabled(true);
+    setStatus('✅ 정답! 다음 단계로...','correct');
     setStageBadge('');
     setTimeout(()=>nextStage(),1000);
-  } else {
-    // 맞췄지만 아직 남은 것
   }
 }
 
 function wrongAnswer(){
-  isPlaying=false;
-  clearHighlight();
-  setTilesDisabled(true);
-  lives--;
-  updateInfo();
+  isPlaying=false; setTilesDisabled(true); lives--; updateInfo();
   if(lives<=0){
-    gameOver=true;
-    setStatus('💀 게임 오버!','gameover');
-    setStageBadge('');
+    gameOver=true; setStatus('💀 게임 오버!','gameover'); setStageBadge('');
     setTimeout(()=>showGameover('gameover'),400);
   } else {
     setStatus(`❌ 틀렸어요! 목숨 ${lives}개 남음`,'wrong');
-    document.getElementById('failSub').textContent=
-      `목숨이 ${lives}개 남았어요. 단계 ${stage}를 다시 시도해요!`;
+    document.getElementById('failSub').textContent=`목숨이 ${lives}개 남았어요. 단계 ${stage}를 다시 시도해요!`;
     document.getElementById('failOverlay').classList.add('show');
   }
 }
 
 function retryStage(){
   document.getElementById('failOverlay').classList.remove('show');
-  playerSeq=[];
-  clearHighlight();
-  setStatus(`👀 단계 ${stage} 다시 보여드릴게요!`,'watching');
-  setTilesDisabled(true);
-  setTimeout(()=>playSequence(),600);
+  playerSeq=[]; setStatus(`👀 단계 ${stage} 다시 보여드릴게요!`,'watching');
+  setTilesDisabled(true); setTimeout(()=>playSequence(),600);
 }
 
 function showGameover(type){
-  document.getElementById('gameoverTitle').textContent=
-    type==='end'?'⏹ 게임 종료':'💀 게임 오버 (3번 실패)';
+  document.getElementById('gameoverTitle').textContent=type==='end'?'⏹ 게임 종료':'💀 게임 오버 (3번 실패)';
   document.getElementById('gameoverScore').textContent=`최고 단계: ${bestStage}단계`;
   document.getElementById('gameoverOverlay').classList.add('show');
 }
@@ -518,10 +357,7 @@ function showGameover(type){
 function endGame(){
   if(gameOver) return;
   gameOver=true; isPlaying=false; isWatching=false;
-  clearHighlight();
-  setTilesDisabled(true);
-  setStatus('⏹ 종료되었습니다','idle');
-  setStageBadge('');
+  setTilesDisabled(true); setStatus('⏹ 종료되었습니다','idle'); setStageBadge('');
   document.getElementById('failOverlay').classList.remove('show');
   showGameover('end');
 }
@@ -529,19 +365,13 @@ function endGame(){
 const medals=['🥇','🥈','🥉'];
 async function submitRanking(){
   const name=document.getElementById('nameInput').value.trim();
-  const btn=document.getElementById('submitBtn');
-  const errEl=document.getElementById('retryMsgGo');
+  const btn=document.getElementById('submitBtn'), errEl=document.getElementById('retryMsgGo');
   if(!name){document.getElementById('nameInput').style.borderColor='#ef476f';return;}
   document.getElementById('nameInput').style.borderColor='';
-  btn.disabled=true; btn.textContent='저장 중...';
-  errEl.style.display='none';
+  btn.disabled=true; btn.textContent='저장 중...'; errEl.style.display='none';
   try{
-    const ref=await window.db.collection('simon_rankings').add({
-      name,stage:bestStage,timestamp:Date.now(),date:new Date().toISOString()
-    });
-    myRankId=ref.id;
-    document.getElementById('nameInput').value='';
-    showRankPopup();
+    const ref=await window.db.collection('simon_rankings').add({name,stage:bestStage,timestamp:Date.now(),date:new Date().toISOString()});
+    myRankId=ref.id; document.getElementById('nameInput').value=''; showRankPopup();
   }catch(e){ errEl.style.display='block'; }
   finally{ btn.disabled=false; btn.textContent='🏆 등록'; }
 }
@@ -551,8 +381,7 @@ async function showRankPopup(){
   const body=document.getElementById('rankBody');
   body.innerHTML='<div class="no-rank">불러오는 중...</div>';
   try{
-    const snap=await window.db.collection('simon_rankings')
-      .orderBy('stage','desc').orderBy('timestamp','asc').limit(50).get();
+    const snap=await window.db.collection('simon_rankings').orderBy('stage','desc').orderBy('timestamp','asc').limit(50).get();
     const list=snap.docs.map(d=>({id:d.id,...d.data()}));
     if(!list.length){body.innerHTML='<div class="no-rank">아직 기록이 없어요!</div>';return;}
     const top10=list.slice(0,10);
@@ -570,15 +399,14 @@ async function showRankPopup(){
     if(myIdx>=0&&myIdx<10)
       body.innerHTML+=`<div style="text-align:center;color:#ffd60a;margin-top:10px;font-size:0.85em">👈 내 기록: ${myIdx+1}위</div>`;
   }catch(e){
-    body.innerHTML=`<div class="no-rank" style="color:#ef476f">불러오지 못했습니다.<br><small>${e.message}</small><br>
+    body.innerHTML=`<div class="no-rank" style="color:#ef476f">불러오지 못했습니다.<br>
       <button onclick="showRankPopup()" style="margin-top:8px;padding:6px 16px;background:#ef476f;color:white;border:none;border-radius:6px;cursor:pointer">🔄 다시 시도</button></div>`;
   }
 }
 
 document.getElementById('startBtn').addEventListener('click',()=>{
   if(!gameOver&&stage>0) return;
-  startBgm();
-  startGame();
+  startBgm(); startGame();
 });
 document.getElementById('endBtn').addEventListener('click',()=>{ if(stage===0||gameOver)return; endGame(); });
 document.getElementById('retryBtn').addEventListener('click',retryStage);
