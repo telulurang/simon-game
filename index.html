@@ -177,19 +177,37 @@ function playKalimba(idx){
   master.gain.setValueAtTime(0.5, now);
   master.connect(audioCtx.destination);
 
-  // 마림바: 사인파 메인 + 빠른 감쇠 (나무 느낌)
+  // 에코 체인
+  const echo1=audioCtx.createDelay(1.0);
+  const echo2=audioCtx.createDelay(1.0);
+  const echo3=audioCtx.createDelay(1.0);
+  const eGain1=audioCtx.createGain();
+  const eGain2=audioCtx.createGain();
+  const eGain3=audioCtx.createGain();
+  echo1.delayTime.setValueAtTime(0.25, now);
+  echo2.delayTime.setValueAtTime(0.25, now);
+  echo3.delayTime.setValueAtTime(0.25, now);
+  eGain1.gain.setValueAtTime(0.35, now);
+  eGain2.gain.setValueAtTime(0.18, now);
+  eGain3.gain.setValueAtTime(0.08, now);
+  // 직렬 연결: master → echo1 → echo2 → echo3 → destination
+  master.connect(echo1); echo1.connect(eGain1); eGain1.connect(audioCtx.destination);
+  eGain1.connect(echo2); echo2.connect(eGain2); eGain2.connect(audioCtx.destination);
+  eGain2.connect(echo3); echo3.connect(eGain3); eGain3.connect(audioCtx.destination);
+
+  // 마림바: 사인파 메인 + 빠른 감쇠
   const o1=audioCtx.createOscillator(), g1=audioCtx.createGain();
   o1.type='sine'; o1.frequency.setValueAtTime(freq, now);
   g1.gain.setValueAtTime(0.9, now);
-  g1.gain.exponentialRampToValueAtTime(0.001, now+0.6); // 칼림바보다 짧은 여운
+  g1.gain.exponentialRampToValueAtTime(0.001, now+0.6);
   o1.connect(g1); g1.connect(master);
   o1.start(now); o1.stop(now+0.65);
 
-  // 4배음 (마림바 특유의 따뜻한 배음)
+  // 4배음
   const o2=audioCtx.createOscillator(), g2=audioCtx.createGain();
   o2.type='sine'; o2.frequency.setValueAtTime(freq*4, now);
   g2.gain.setValueAtTime(0.25, now);
-  g2.gain.exponentialRampToValueAtTime(0.001, now+0.08); // 아주 빠르게 사라짐
+  g2.gain.exponentialRampToValueAtTime(0.001, now+0.08);
   o2.connect(g2); g2.connect(master);
   o2.start(now); o2.stop(now+0.1);
 
@@ -228,7 +246,7 @@ function playPianoNote(){
   bgmIdx++;
   const now=audioCtx.currentTime;
   const master=audioCtx.createGain();
-  master.gain.setValueAtTime(0.38, now);
+  master.gain.setValueAtTime(0.9, now);
   master.connect(audioCtx.destination);
 
   // 메인 사인파 (맑고 투명한 피아노)
