@@ -161,8 +161,8 @@
 // ── 오디오 컨텍스트 ───────────────────────────────
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-// ── 칼림바 (타일 클릭음) ─────────────────────────
-const KALIMBA_NOTES = [
+// ── 마림바 (타일 클릭음) ─────────────────────────
+const MARIMBA_NOTES = [
   261.63,293.66,329.63,392.00,440.00,
   523.25,587.33,659.25,783.99,880.00,
   1046.50,1174.66,1318.51,1567.98,1760.00,
@@ -171,18 +171,35 @@ const KALIMBA_NOTES = [
 ];
 function playKalimba(idx){
   if(audioCtx.state==='suspended') audioCtx.resume();
-  const freq=KALIMBA_NOTES[idx]||440;
-  const now=audioCtx.currentTime;
-  const master=audioCtx.createGain();
-  master.gain.setValueAtTime(0.45,now);
+  const freq = MARIMBA_NOTES[idx] || 440;
+  const now  = audioCtx.currentTime;
+  const master = audioCtx.createGain();
+  master.gain.setValueAtTime(0.5, now);
   master.connect(audioCtx.destination);
-  [[freq,'sine',0.6,1.8],[freq,'square',0.04,0.3],[freq*2,'sine',0.15,0.6]].forEach(([f,t,g,d])=>{
-    const o=audioCtx.createOscillator(), gn=audioCtx.createGain();
-    o.type=t; o.frequency.setValueAtTime(f,now);
-    gn.gain.setValueAtTime(g,now); gn.gain.exponentialRampToValueAtTime(0.001,now+d);
-    o.connect(gn); gn.connect(master);
-    o.start(now); o.stop(now+d);
-  });
+
+  // 마림바: 사인파 메인 + 빠른 감쇠 (나무 느낌)
+  const o1=audioCtx.createOscillator(), g1=audioCtx.createGain();
+  o1.type='sine'; o1.frequency.setValueAtTime(freq, now);
+  g1.gain.setValueAtTime(0.9, now);
+  g1.gain.exponentialRampToValueAtTime(0.001, now+0.6); // 칼림바보다 짧은 여운
+  o1.connect(g1); g1.connect(master);
+  o1.start(now); o1.stop(now+0.65);
+
+  // 4배음 (마림바 특유의 따뜻한 배음)
+  const o2=audioCtx.createOscillator(), g2=audioCtx.createGain();
+  o2.type='sine'; o2.frequency.setValueAtTime(freq*4, now);
+  g2.gain.setValueAtTime(0.25, now);
+  g2.gain.exponentialRampToValueAtTime(0.001, now+0.08); // 아주 빠르게 사라짐
+  o2.connect(g2); g2.connect(master);
+  o2.start(now); o2.stop(now+0.1);
+
+  // 10배음 (어택 클릭감)
+  const o3=audioCtx.createOscillator(), g3=audioCtx.createGain();
+  o3.type='sine'; o3.frequency.setValueAtTime(freq*10, now);
+  g3.gain.setValueAtTime(0.1, now);
+  g3.gain.exponentialRampToValueAtTime(0.001, now+0.04);
+  o3.connect(g3); g3.connect(master);
+  o3.start(now); o3.stop(now+0.05);
 }
 
 // ── 피아노 배경음악 ───────────────────────────────
