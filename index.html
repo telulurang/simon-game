@@ -577,13 +577,12 @@ async function showRankPopup(){
 
 document.getElementById('startBtn').addEventListener('click',()=>{
   if(!gameOver&&stage>0) return;
-  audioCtx.resume().then(()=>{ tryStartBgm(); startGame(); });
+  startBgm();
+  startGame();
 });
 document.getElementById('endBtn').addEventListener('click',()=>{ if(stage===0||gameOver)return; endGame(); });
 document.getElementById('retryBtn').addEventListener('click',retryStage);
-document.getElementById('restartBtn').addEventListener('click',()=>{
-  audioCtx.resume().then(()=>{ tryStartBgm(); startGame(); });
-});
+document.getElementById('restartBtn').addEventListener('click',()=>{ startBgm(); startGame(); });
 document.getElementById('submitBtn').addEventListener('click',submitRanking);
 document.getElementById('rankBtn').addEventListener('click',showRankPopup);
 document.getElementById('closeRank').addEventListener('click',()=>document.getElementById('rankOverlay').classList.remove('show'));
