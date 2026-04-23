@@ -203,14 +203,22 @@ function playKalimba(idx){
 }
 
 // ── 피아노 배경음악 ───────────────────────────────
-// 숲속 느낌의 Am 펜타토닉 + 바람 노이즈
+// C장조 아르페지오 - 물 흐르는 듯 밝고 잔잔한 느낌
 const BGM = [
-  [220.00,0.8],[246.94,0.6],[261.63,0.9],[293.66,0.7],
-  [329.63,0.8],[293.66,0.6],[261.63,0.9],[246.94,0.7],
-  [220.00,1.0],[196.00,0.8],[220.00,0.7],[261.63,0.9],
-  [293.66,0.8],[329.63,0.7],[293.66,1.0],[261.63,0.8],
-  [246.94,0.7],[220.00,0.9],[196.00,0.8],[174.61,1.2],
-  [196.00,0.7],[220.00,0.8],[246.94,0.7],[261.63,1.0],
+  // 상행 아르페지오
+  [261.63,0.3],[329.63,0.3],[392.00,0.3],[523.25,0.3],
+  [587.33,0.3],[523.25,0.3],[392.00,0.3],[329.63,0.3],
+  // G장조 아르페지오
+  [293.66,0.3],[369.99,0.3],[440.00,0.3],[587.33,0.3],
+  [659.25,0.3],[587.33,0.3],[440.00,0.3],[369.99,0.3],
+  // Am 아르페지오
+  [261.63,0.3],[329.63,0.3],[440.00,0.3],[523.25,0.3],
+  [659.25,0.3],[523.25,0.3],[440.00,0.3],[329.63,0.3],
+  // F장조 아르페지오
+  [349.23,0.3],[440.00,0.3],[523.25,0.3],[698.46,0.3],
+  [783.99,0.3],[698.46,0.3],[523.25,0.3],[440.00,0.3],
+  // 마무리 C
+  [261.63,0.4],[329.63,0.3],[392.00,0.3],[523.25,0.5],
 ];
 let bgmOn=false, bgmTid=null, bgmIdx=0;
 
@@ -220,39 +228,31 @@ function playPianoNote(){
   bgmIdx++;
   const now=audioCtx.currentTime;
   const master=audioCtx.createGain();
-  master.gain.setValueAtTime(0.42,now);
+  master.gain.setValueAtTime(0.38, now);
   master.connect(audioCtx.destination);
 
-  // 메인 사인파 (피아노 바디)
+  // 메인 사인파 (맑고 투명한 피아노)
   const o1=audioCtx.createOscillator(), g1=audioCtx.createGain();
-  o1.type='sine'; o1.frequency.setValueAtTime(freq,now);
-  g1.gain.setValueAtTime(0.8,now);
-  g1.gain.exponentialRampToValueAtTime(0.001,now+dur+0.8);
+  o1.type='sine'; o1.frequency.setValueAtTime(freq, now);
+  g1.gain.setValueAtTime(0.7, now);
+  g1.gain.exponentialRampToValueAtTime(0.001, now+dur+0.5);
   o1.connect(g1); g1.connect(master);
-  o1.start(now); o1.stop(now+dur+0.9);
+  o1.start(now); o1.stop(now+dur+0.6);
 
-  // 삼각파 (따뜻한 배음)
+  // 2배음 (맑은 반짝임)
   const o2=audioCtx.createOscillator(), g2=audioCtx.createGain();
-  o2.type='triangle'; o2.frequency.setValueAtTime(freq,now);
-  g2.gain.setValueAtTime(0.25,now);
-  g2.gain.exponentialRampToValueAtTime(0.001,now+dur*0.5);
+  o2.type='sine'; o2.frequency.setValueAtTime(freq*2, now);
+  g2.gain.setValueAtTime(0.15, now);
+  g2.gain.exponentialRampToValueAtTime(0.001, now+dur*0.4);
   o2.connect(g2); g2.connect(master);
-  o2.start(now); o2.stop(now+dur*0.5+0.1);
+  o2.start(now); o2.stop(now+dur*0.4+0.1);
 
-  // 2배음 (맑은 하이톤)
-  const o3=audioCtx.createOscillator(), g3=audioCtx.createGain();
-  o3.type='sine'; o3.frequency.setValueAtTime(freq*2,now);
-  g3.gain.setValueAtTime(0.08,now);
-  g3.gain.exponentialRampToValueAtTime(0.001,now+dur*0.3);
-  o3.connect(g3); g3.connect(master);
-  o3.start(now); o3.stop(now+dur*0.3+0.1);
-
-  // 리버브 효과 (딜레이로 공간감)
-  const delay=audioCtx.createDelay(0.5);
-  const delayGain=audioCtx.createGain();
-  delay.delayTime.setValueAtTime(0.25,now);
-  delayGain.gain.setValueAtTime(0.18,now);
-  g1.connect(delay); delay.connect(delayGain); delayGain.connect(master);
+  // 딜레이로 물결 같은 공간감
+  const delay=audioCtx.createDelay(0.4);
+  const dGain=audioCtx.createGain();
+  delay.delayTime.setValueAtTime(0.18, now);
+  dGain.gain.setValueAtTime(0.12, now);
+  g1.connect(delay); delay.connect(dGain); dGain.connect(master);
 
   bgmTid=setTimeout(playPianoNote, dur*1000);
 }
