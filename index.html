@@ -268,8 +268,7 @@ function startBgm(){
   if(bgmPlaying) return;
   bgmPlaying = true;
   bgmIdx = 0;
-  if(audioCtx.state === 'suspended') audioCtx.resume().then(playBgmNote);
-  else playBgmNote();
+  audioCtx.resume().then(()=>playBgmNote());
 }
 
 function stopBgm(){
@@ -280,7 +279,10 @@ function stopBgm(){
 // 첫 인터랙션 시 BGM 시작
 let bgmStarted = false;
 function tryStartBgm(){
-  if(!bgmStarted){ bgmStarted=true; startBgm(); }
+  if(!bgmStarted){
+    bgmStarted = true;
+    audioCtx.resume().then(()=>startBgm());
+  }
 }
 document.addEventListener('touchstart', tryStartBgm, {once:true});
 document.addEventListener('click', tryStartBgm, {once:true});
