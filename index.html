@@ -206,6 +206,85 @@ function resumeAudio(){
 document.addEventListener('touchstart', resumeAudio, {once:false});
 document.addEventListener('click', resumeAudio, {once:false});
 
+// ── 배경 음악 ─────────────────────────────────────
+// Am 펜타토닉 베이스 루프 (은은하고 잔잔한 느낌)
+const BGM_NOTES = [
+  // 음정(Hz), 박자길이(초)
+  [110.00, 0.6], // A2
+  [130.81, 0.4], // C3
+  [146.83, 0.5], // D3
+  [164.81, 0.3], // E3
+  [130.81, 0.5], // C3
+  [110.00, 0.4], // A2
+  [ 98.00, 0.6], // G2
+  [110.00, 0.5], // A2
+  [123.47, 0.4], // B2
+  [130.81, 0.6], // C3
+  [110.00, 0.4], // A2
+  [ 98.00, 0.8], // G2
+];
+
+let bgmPlaying = false;
+let bgmTimeout = null;
+let bgmIdx = 0;
+
+function playBgmNote(){
+  if(!bgmPlaying) return;
+  const [freq, dur] = BGM_NOTES[bgmIdx % BGM_NOTES.length];
+  bgmIdx++;
+
+  const now = audioCtx.currentTime;
+
+  // 부드러운 사인파 베이스
+  const osc  = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  const filter = audioCtx.createBiquadFilter();
+
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(freq, now);
+
+  // 로우패스 필터로 둔탁하고 따뜻하게
+  filter.type = 'lowpass';
+  filter.frequency.setValueAtTime(400, now);
+  filter.Q.setValueAtTime(1, now);
+
+  // 은은한 볼륨 + 부드러운 어택/릴리즈
+  gain.gain.setValueAtTime(0, now);
+  gain.gain.linearRampToValueAtTime(0.10, now + 0.08);
+  gain.gain.setValueAtTime(0.10, now + dur * 0.6);
+  gain.gain.linearRampToValueAtTime(0, now + dur);
+
+  osc.connect(filter);
+  filter.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  osc.start(now);
+  osc.stop(now + dur);
+
+  bgmTimeout = setTimeout(playBgmNote, dur * 1000);
+}
+
+function startBgm(){
+  if(bgmPlaying) return;
+  bgmPlaying = true;
+  bgmIdx = 0;
+  if(audioCtx.state === 'suspended') audioCtx.resume().then(playBgmNote);
+  else playBgmNote();
+}
+
+function stopBgm(){
+  bgmPlaying = false;
+  if(bgmTimeout) clearTimeout(bgmTimeout);
+}
+
+// 첫 인터랙션 시 BGM 시작
+let bgmStarted = false;
+function tryStartBgm(){
+  if(!bgmStarted){ bgmStarted=true; startBgm(); }
+}
+document.addEventListener('touchstart', tryStartBgm, {once:true});
+document.addEventListener('click', tryStartBgm, {once:true});
+
 // 25개 타일에 칼림바 음계 배정 (C4~C6 범위 펜타토닉)
 const NOTES = [
   261.63, 293.66, 329.63, 392.00, 440.00, // C4 D4 E4 G4 A4
