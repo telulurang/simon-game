@@ -199,6 +199,13 @@
 // ── 칼림바 사운드 ─────────────────────────────────
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
+// 모바일 대응: 첫 터치/클릭 시 AudioContext resume
+function resumeAudio(){
+  if(audioCtx.state === 'suspended') audioCtx.resume();
+}
+document.addEventListener('touchstart', resumeAudio, {once:false});
+document.addEventListener('click', resumeAudio, {once:false});
+
 // 25개 타일에 칼림바 음계 배정 (C4~C6 범위 펜타토닉)
 const NOTES = [
   261.63, 293.66, 329.63, 392.00, 440.00, // C4 D4 E4 G4 A4
