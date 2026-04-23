@@ -37,170 +37,94 @@
     }
     h1 { text-align:center; color:white; font-size:1.6em; margin-bottom:4px; letter-spacing:2px; }
     .subtitle { text-align:center; color:rgba(255,255,255,0.5); font-size:0.8em; margin-bottom:16px; }
-
-    /* 상단 정보 */
-    .info-row {
-      display:flex; justify-content:space-between; align-items:center;
-      margin-bottom:12px; gap:8px;
-    }
-    .info-box {
-      background:rgba(255,255,255,0.08); border-radius:12px;
-      padding:8px 14px; text-align:center; flex:1;
-    }
+    .info-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:8px; }
+    .info-box { background:rgba(255,255,255,0.08); border-radius:12px; padding:8px 14px; text-align:center; flex:1; }
     .info-label { color:rgba(255,255,255,0.5); font-size:0.7em; }
     .info-value { color:white; font-size:1.2em; font-weight:bold; }
     .life-box { display:flex; gap:4px; justify-content:center; margin-top:2px; }
     .heart { font-size:1em; transition:all 0.3s; }
     .heart.lost { filter:grayscale(1); opacity:0.3; }
-
-    /* 버튼 */
     .btn-row { display:flex; gap:8px; margin-bottom:12px; }
-    .gbtn {
-      flex:1; padding:10px; border:none; border-radius:10px;
-      font-size:0.85em; font-weight:bold; cursor:pointer;
-      transition:all 0.2s; color:white;
-    }
+    .gbtn { flex:1; padding:10px; border:none; border-radius:10px; font-size:0.85em; font-weight:bold; cursor:pointer; transition:all 0.2s; color:white; }
     .gbtn:hover { transform:translateY(-1px); }
     .btn-start { background:linear-gradient(135deg,#00b4d8,#0077b6); }
     .btn-end   { background:linear-gradient(135deg,#ef476f,#d62828); }
     .btn-rank  { background:linear-gradient(135deg,#f59e0b,#ef4444); }
-
-    /* 상태 메시지 */
-    .status {
-      text-align:center; font-size:1em; font-weight:bold;
-      color:white; margin-bottom:12px; min-height:24px;
-      letter-spacing:1px;
-    }
-    .status.watching { color:#00d4ff; }
+    .status { text-align:center; font-size:1em; font-weight:bold; color:white; margin-bottom:12px; min-height:24px; letter-spacing:1px; }
+    .status.watching  { color:#00d4ff; }
     .status.your-turn { color:#ffd60a; }
-    .status.correct { color:#06d6a0; }
-    .status.wrong { color:#ef476f; }
-    .status.gameover { color:#ef476f; }
-    .status.idle { color:rgba(255,255,255,0.6); }
-
-    /* 그리드 */
-    .grid {
-      display:grid;
-      grid-template-columns:repeat(5,1fr);
-      gap:6px;
-      margin-bottom:14px;
-    }
+    .status.correct   { color:#06d6a0; }
+    .status.wrong     { color:#ef476f; }
+    .status.gameover  { color:#ef476f; }
+    .status.idle      { color:rgba(255,255,255,0.6); }
+    .grid { display:grid; grid-template-columns:repeat(5,1fr); gap:6px; margin-bottom:14px; }
     .tile {
-      aspect-ratio:1;
-      border-radius:10px;
-      cursor:pointer;
-      transition:all 0.1s;
-      border:2px solid rgba(255,255,255,0.1);
-      position:relative;
-      overflow:hidden;
+      aspect-ratio:1; border-radius:10px; cursor:pointer;
+      transition:all 0.1s; border:2px solid rgba(255,255,255,0.1);
+      position:relative; overflow:hidden;
     }
-    .tile::after {
-      content:'';
-      position:absolute; inset:0;
-      background:rgba(255,255,255,0.15);
-      opacity:0; transition:opacity 0.1s;
-    }
+    .tile::after { content:''; position:absolute; inset:0; background:rgba(255,255,255,0.15); opacity:0; transition:opacity 0.1s; }
     .tile:hover::after { opacity:1; }
-    .tile.flash {
-      transform:scale(1.08);
-      border-color:white;
-      box-shadow:0 0 20px currentColor, 0 0 40px currentColor;
-      filter:brightness(1.8);
-    }
-    .tile.pressed {
-      transform:scale(0.93);
-      filter:brightness(1.5);
-    }
+    .tile.flash { transform:scale(1.08); border-color:white; box-shadow:0 0 20px currentColor, 0 0 40px currentColor; filter:brightness(1.8); }
+    .tile.pressed { transform:scale(0.93); filter:brightness(1.5); }
     .tile.disabled { cursor:default; pointer-events:none; }
-
-    /* 진행 바 */
-    .progress-wrap {
-      background:rgba(255,255,255,0.08); border-radius:10px;
-      height:8px; margin-bottom:14px; overflow:hidden;
+    /* 단계마다 눌러야 할 타일 강조 */
+    .tile.target {
+      border:2px solid rgba(255,255,255,0.6);
+      box-shadow:0 0 10px rgba(255,255,255,0.3);
+      animation:targetPulse 1s infinite alternate;
     }
-    .progress-bar {
-      height:100%; border-radius:10px;
-      background:linear-gradient(to right,#00d4ff,#ffd60a);
-      transition:width 0.3s ease;
+    @keyframes targetPulse {
+      from { box-shadow:0 0 6px rgba(255,255,255,0.2); }
+      to   { box-shadow:0 0 18px rgba(255,255,255,0.6); }
     }
-
-    /* 팝업 공통 */
-    .modal-overlay {
-      position:fixed; inset:0; background:rgba(0,0,0,0.65);
-      display:none; align-items:center; justify-content:center; z-index:500;
-    }
+    .progress-wrap { background:rgba(255,255,255,0.08); border-radius:10px; height:8px; margin-bottom:14px; overflow:hidden; }
+    .progress-bar { height:100%; border-radius:10px; background:linear-gradient(to right,#00d4ff,#ffd60a); transition:width 0.3s ease; }
+    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.65); display:none; align-items:center; justify-content:center; z-index:500; }
     .modal-overlay.show { display:flex; }
-    .modal-box {
-      background:#1e1e3a; border:1px solid rgba(255,255,255,0.15);
-      border-radius:20px; padding:24px; width:300px; max-width:90vw;
-      text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.5);
-      animation: popIn 0.2s ease;
-    }
-    @keyframes popIn {
-      from { transform:scale(0.85); opacity:0; }
-      to   { transform:scale(1);    opacity:1; }
-    }
-
-    /* 실패 팝업 */
+    .modal-box { background:#1e1e3a; border:1px solid rgba(255,255,255,0.15); border-radius:20px; padding:24px; width:300px; max-width:90vw; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.5); animation:popIn 0.2s ease; }
+    @keyframes popIn { from{transform:scale(0.85);opacity:0} to{transform:scale(1);opacity:1} }
     .fail-title { color:#ef476f; font-size:1.2em; font-weight:bold; margin-bottom:6px; }
     .fail-sub { color:rgba(255,255,255,0.6); font-size:0.88em; margin-bottom:16px; }
-    .retry-btn {
-      padding:10px 28px; background:linear-gradient(135deg,#ef476f,#d62828);
-      color:white; border:none; border-radius:10px; font-weight:bold;
-      cursor:pointer; font-size:0.95em; width:100%;
-    }
-
-    /* 게임오버 팝업 */
+    .retry-btn { padding:10px 28px; background:linear-gradient(135deg,#ef476f,#d62828); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer; font-size:0.95em; width:100%; }
     .gameover-title { color:white; font-size:1.2em; font-weight:bold; margin-bottom:4px; }
     .gameover-score { color:#ffd60a; font-size:0.95em; margin-bottom:14px; }
     .name-row { display:flex; gap:8px; justify-content:center; margin-bottom:8px; }
-    .name-input {
-      padding:8px 12px; border:1px solid rgba(255,255,255,0.2);
-      background:rgba(255,255,255,0.08); color:white;
-      border-radius:8px; font-size:0.9em; width:160px; outline:none;
-    }
+    .name-input { padding:8px 12px; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.08); color:white; border-radius:8px; font-size:0.9em; width:160px; outline:none; }
     .name-input::placeholder { color:rgba(255,255,255,0.3); }
     .name-input:focus { border-color:#00d4ff; }
-    .submit-btn {
-      padding:8px 16px; background:linear-gradient(135deg,#ffd60a,#f59e0b);
-      color:#1a1a2e; border:none; border-radius:8px;
-      font-weight:bold; cursor:pointer; font-size:0.9em;
-    }
+    .submit-btn { padding:8px 16px; background:linear-gradient(135deg,#ffd60a,#f59e0b); color:#1a1a2e; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:0.9em; }
     .submit-btn:disabled { opacity:0.5; cursor:not-allowed; }
     .retry-msg-go { color:#ef476f; font-size:0.8em; margin-top:6px; display:none; }
-
-    /* 랭킹 팝업 */
-    .overlay {
-      position:fixed; inset:0; background:rgba(0,0,0,0.7);
-      display:none; align-items:center; justify-content:center; z-index:1000;
-    }
+    .overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); display:none; align-items:center; justify-content:center; z-index:1000; }
     .overlay.show { display:flex; }
-    .popup {
-      background:#1a1a2e; border:1px solid rgba(255,255,255,0.15);
-      border-radius:20px; padding:20px;
-      width:360px; max-width:92vw; max-height:80vh; overflow-y:auto;
-    }
+    .popup { background:#1a1a2e; border:1px solid rgba(255,255,255,0.15); border-radius:20px; padding:20px; width:360px; max-width:92vw; max-height:80vh; overflow-y:auto; }
     .popup-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
     .popup-title { color:white; font-size:1.1em; font-weight:bold; }
-    .close-x {
-      background:rgba(255,255,255,0.1); border:none; border-radius:50%;
-      width:30px; height:30px; color:white; font-size:1em;
-      cursor:pointer; display:flex; align-items:center; justify-content:center;
-    }
+    .close-x { background:rgba(255,255,255,0.1); border:none; border-radius:50%; width:30px; height:30px; color:white; font-size:1em; cursor:pointer; display:flex; align-items:center; justify-content:center; }
     .rtable { width:100%; border-collapse:collapse; }
-    .rtable th {
-      color:rgba(255,255,255,0.5); font-size:0.8em; padding:8px 6px;
-      border-bottom:1px solid rgba(255,255,255,0.1); text-align:center;
-    }
+    .rtable th { color:rgba(255,255,255,0.5); font-size:0.8em; padding:8px 6px; border-bottom:1px solid rgba(255,255,255,0.1); text-align:center; }
     .rtable td { padding:8px 6px; font-size:0.85em; text-align:center; color:white; border-bottom:1px solid rgba(255,255,255,0.05); }
     .rtable tr.mine td { color:#ffd60a; font-weight:bold; }
     .no-rank { text-align:center; color:rgba(255,255,255,0.4); padding:20px; }
+
+    /* 단계 안내 배지 */
+    .stage-badge {
+      text-align:center; margin-bottom:8px;
+      font-size:0.82em; color:rgba(255,255,255,0.5);
+      letter-spacing:1px;
+    }
+    .seq-count {
+      display:inline-block;
+      background:rgba(255,255,255,0.1);
+      border-radius:20px; padding:2px 12px;
+    }
   </style>
 </head>
 <body>
 <div class="wrap">
   <h1>🧠 사이먼</h1>
-  <div class="subtitle">순서를 기억하고 따라하세요</div>
+  <div class="subtitle">매 단계마다 새로운 순서를 기억하세요</div>
 
   <div class="info-row">
     <div class="info-box">
@@ -228,6 +152,7 @@
   </div>
 
   <div class="status idle" id="status">시작 버튼을 눌러주세요</div>
+  <div class="stage-badge" id="stageBadge"></div>
 
   <!-- 실패 팝업 -->
   <div class="modal-overlay" id="failOverlay">
@@ -271,63 +196,128 @@
 </div>
 
 <script>
-// ── 색상 팔레트 (25개 타일) ──────────────────────────
-const COLORS = [
+// ── 칼림바 사운드 ─────────────────────────────────
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+// 25개 타일에 칼림바 음계 배정 (C4~C6 범위 펜타토닉)
+const NOTES = [
+  261.63, 293.66, 329.63, 392.00, 440.00, // C4 D4 E4 G4 A4
+  523.25, 587.33, 659.25, 783.99, 880.00, // C5 D5 E5 G5 A5
+  1046.50,1174.66,1318.51,1567.98,1760.00, // C6 D6 E6 G6 A6
+  349.23, 415.30, 466.16, 369.99, 311.13, // F4 G#4 A#4 F#4 D#4
+  554.37, 622.25, 698.46, 830.61, 932.33, // C#5 D#5 F5 G#5 A#5
+];
+
+function playKalimba(idx){
+  const freq = NOTES[idx] || 440;
+  const now  = audioCtx.currentTime;
+
+  // 메인 톤 (사인파 + 약한 사각파 믹스 → 칼림바 느낌)
+  const osc1 = audioCtx.createOscillator();
+  const osc2 = audioCtx.createOscillator();
+  const gain1 = audioCtx.createGain();
+  const gain2 = audioCtx.createGain();
+  const master = audioCtx.createGain();
+
+  osc1.type = 'sine';
+  osc1.frequency.setValueAtTime(freq, now);
+
+  osc2.type = 'square';
+  osc2.frequency.setValueAtTime(freq, now);
+
+  // 칼림바 특유의 빠른 어택 + 긴 감쇠
+  gain1.gain.setValueAtTime(0.6, now);
+  gain1.gain.exponentialRampToValueAtTime(0.001, now + 1.8);
+
+  gain2.gain.setValueAtTime(0.04, now);
+  gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+
+  master.gain.setValueAtTime(0.5, now);
+
+  osc1.connect(gain1); gain1.connect(master);
+  osc2.connect(gain2); gain2.connect(master);
+  master.connect(audioCtx.destination);
+
+  osc1.start(now); osc1.stop(now + 1.8);
+  osc2.start(now); osc2.stop(now + 0.3);
+
+  // 배음 (2배음 살짝 추가)
+  const osc3 = audioCtx.createOscillator();
+  const gain3 = audioCtx.createGain();
+  osc3.type = 'sine';
+  osc3.frequency.setValueAtTime(freq * 2, now);
+  gain3.gain.setValueAtTime(0.15, now);
+  gain3.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+  osc3.connect(gain3); gain3.connect(master);
+  osc3.start(now); osc3.stop(now + 0.6);
+}
+
+const COLORS=[
   '#ef476f','#f77f00','#fcbf49','#eae2b7','#06d6a0',
   '#00b4d8','#0077b6','#7b2d8b','#c77dff','#ff9f1c',
   '#e63946','#2dc653','#48cae4','#ff6b6b','#ffe66d',
   '#a8dadc','#457b9d','#e9c46a','#f4a261','#264653',
   '#6a4c93','#1982c4','#8ac926','#ff595e','#ffca3a',
 ];
-
-const ROWS=5, COLS=5, TOTAL=25;
-const MAX_LIVES=3;
+const ROWS=5,COLS=5,TOTAL=25,MAX_LIVES=3;
 const FLASH_ON=400, FLASH_OFF=200;
 
-let sequence=[], playerSeq=[], stage=0, lives=MAX_LIVES;
-let isWatching=false, isPlaying=false, gameOver=false;
-let bestStage=0, myRankId=null;
+// 단계별 시퀀스 길이: 1단계=2개, 매 단계+1개씩
+const seqLen = stage => stage + 1;
 
-// ── 타일 생성 ────────────────────────────────────────
-const grid=document.getElementById('grid');
+let sequence=[],playerSeq=[],stage=0,lives=MAX_LIVES;
+let isWatching=false,isPlaying=false,gameOver=false;
+let bestStage=0,myRankId=null;
+
+// 타일 생성
+const gridEl=document.getElementById('grid');
 const tiles=[];
 for(let i=0;i<TOTAL;i++){
   const t=document.createElement('div');
   t.className='tile disabled';
   t.style.background=COLORS[i];
-  t.style.color=COLORS[i]; // for box-shadow color
+  t.style.color=COLORS[i];
   t.dataset.i=i;
   t.addEventListener('click',()=>onTileClick(i));
-  grid.appendChild(t);
+  gridEl.appendChild(t);
   tiles.push(t);
 }
 
-// ── 상태 업데이트 ────────────────────────────────────
 function setStatus(msg,cls=''){
   const el=document.getElementById('status');
-  el.textContent=msg;
-  el.className='status '+(cls||'idle');
+  el.textContent=msg; el.className='status '+(cls||'idle');
+}
+function setStageBadge(txt){
+  document.getElementById('stageBadge').innerHTML=txt?`<span class="seq-count">${txt}</span>`:'';
 }
 function updateInfo(){
   document.getElementById('stageVal').textContent=stage||'-';
   document.getElementById('bestVal').textContent=bestStage||'-';
-  const hearts=document.querySelectorAll('.heart');
-  hearts.forEach((h,i)=>{ h.classList.toggle('lost',i>=lives); });
-  document.getElementById('progressBar').style.width=
-    stage>0 ? Math.min((stage/30)*100,100)+'%' : '0%';
+  document.querySelectorAll('.heart').forEach((h,i)=>h.classList.toggle('lost',i>=lives));
+  document.getElementById('progressBar').style.width=stage>0?Math.min((stage/30)*100,100)+'%':'0%';
 }
 function setTilesDisabled(v){
-  tiles.forEach(t=>{ t.classList.toggle('disabled',v); });
+  tiles.forEach(t=>t.classList.toggle('disabled',v));
+}
+// 남은 눌러야 할 타일 강조
+function highlightRemaining(){
+  tiles.forEach(t=>t.classList.remove('target'));
+  // 아직 안 누른 것들
+  for(let i=playerSeq.length;i<sequence.length;i++){
+    tiles[sequence[i]].classList.add('target');
+  }
+}
+function clearHighlight(){
+  tiles.forEach(t=>t.classList.remove('target'));
 }
 
-// ── 게임 시작 ────────────────────────────────────────
 function startGame(){
-  sequence=[]; playerSeq=[]; stage=0; lives=MAX_LIVES; gameOver=false;
-  myRankId=null;
+  sequence=[];playerSeq=[];stage=0;lives=MAX_LIVES;gameOver=false;myRankId=null;
   document.getElementById('failOverlay').classList.remove('show');
   document.getElementById('gameoverOverlay').classList.remove('show');
   document.getElementById('nameInput').value='';
   document.getElementById('retryMsgGo').style.display='none';
+  setStageBadge('');
   updateInfo();
   nextStage();
 }
@@ -336,11 +326,22 @@ function nextStage(){
   stage++;
   if(stage>bestStage) bestStage=stage;
   updateInfo();
-  // 새 타일 추가
-  sequence.push(Math.floor(Math.random()*TOTAL));
+
+  // ★ 매 단계마다 완전히 새로운 시퀀스 생성 (중복 없이)
+  const len=seqLen(stage);
+  const pool=[...Array(TOTAL).keys()];
+  sequence=[];
+  for(let i=0;i<len;i++){
+    const ri=Math.floor(Math.random()*(pool.length));
+    sequence.push(pool[ri]);
+    pool.splice(ri,1); // 중복 제거
+  }
   playerSeq=[];
+
   setTilesDisabled(true);
-  setStatus(`👀 단계 ${stage} — 잘 보세요!`,'watching');
+  clearHighlight();
+  setStageBadge(`단계 ${stage} — ${len}개 순서`);
+  setStatus(`👀 단계 ${stage} — 잘 보세요! (${len}개)`,'watching');
   setTimeout(()=>playSequence(),600);
 }
 
@@ -355,21 +356,20 @@ function playSequence(){
       isPlaying=true;
       return;
     }
-    const idx=sequence[i];
-    flashTile(idx,()=>{ i++; setTimeout(next, FLASH_OFF); });
+    flashTile(sequence[i],()=>{ i++; setTimeout(next,FLASH_OFF); });
   }
   next();
 }
 
-function flashTile(idx, cb){
+function flashTile(idx,cb){
   const t=tiles[idx];
   t.classList.add('flash');
-  setTimeout(()=>{ t.classList.remove('flash'); if(cb) cb(); }, FLASH_ON);
+  setTimeout(()=>{ t.classList.remove('flash'); if(cb) cb(); },FLASH_ON);
 }
 
-// ── 타일 클릭 ────────────────────────────────────────
 function onTileClick(idx){
   if(!isPlaying||isWatching||gameOver) return;
+  playKalimba(idx);
   const t=tiles[idx];
   t.classList.add('pressed');
   setTimeout(()=>t.classList.remove('pressed'),150);
@@ -378,34 +378,37 @@ function onTileClick(idx){
   const pos=playerSeq.length-1;
 
   if(playerSeq[pos]!==sequence[pos]){
-    // 틀림
-    wrongAnswer();
-    return;
+    wrongAnswer(); return;
   }
 
   if(playerSeq.length===sequence.length){
-    // 성공
+    // 단계 클리어
     isPlaying=false;
+    clearHighlight();
     setTilesDisabled(true);
     setStatus(`✅ 정답! 다음 단계로...`,'correct');
-    setTimeout(()=>nextStage(), 1000);
+    setStageBadge('');
+    setTimeout(()=>nextStage(),1000);
+  } else {
+    // 맞췄지만 아직 남은 것
   }
 }
 
 function wrongAnswer(){
   isPlaying=false;
+  clearHighlight();
   setTilesDisabled(true);
   lives--;
   updateInfo();
-
   if(lives<=0){
     gameOver=true;
     setStatus('💀 게임 오버!','gameover');
+    setStageBadge('');
     setTimeout(()=>showGameover('gameover'),400);
   } else {
     setStatus(`❌ 틀렸어요! 목숨 ${lives}개 남음`,'wrong');
     document.getElementById('failSub').textContent=
-      `목숨이 ${lives}개 남았어요. 단계 ${stage}을 다시 시도해요!`;
+      `목숨이 ${lives}개 남았어요. 단계 ${stage}를 다시 시도해요!`;
     document.getElementById('failOverlay').classList.add('show');
   }
 }
@@ -413,14 +416,15 @@ function wrongAnswer(){
 function retryStage(){
   document.getElementById('failOverlay').classList.remove('show');
   playerSeq=[];
+  clearHighlight();
   setStatus(`👀 단계 ${stage} 다시 보여드릴게요!`,'watching');
   setTilesDisabled(true);
   setTimeout(()=>playSequence(),600);
 }
 
 function showGameover(type){
-  const title = type==='end' ? '⏹ 게임 종료' : '💀 게임 오버 (3번 실패)';
-  document.getElementById('gameoverTitle').textContent=title;
+  document.getElementById('gameoverTitle').textContent=
+    type==='end'?'⏹ 게임 종료':'💀 게임 오버 (3번 실패)';
   document.getElementById('gameoverScore').textContent=`최고 단계: ${bestStage}단계`;
   document.getElementById('gameoverOverlay').classList.add('show');
 }
@@ -428,15 +432,15 @@ function showGameover(type){
 function endGame(){
   if(gameOver) return;
   gameOver=true; isPlaying=false; isWatching=false;
+  clearHighlight();
   setTilesDisabled(true);
   setStatus('⏹ 종료되었습니다','idle');
+  setStageBadge('');
   document.getElementById('failOverlay').classList.remove('show');
   showGameover('end');
 }
 
-// ── 랭킹 ─────────────────────────────────────────────
 const medals=['🥇','🥈','🥉'];
-
 async function submitRanking(){
   const name=document.getElementById('nameInput').value.trim();
   const btn=document.getElementById('submitBtn');
@@ -447,17 +451,13 @@ async function submitRanking(){
   errEl.style.display='none';
   try{
     const ref=await window.db.collection('simon_rankings').add({
-      name, stage:bestStage,
-      timestamp:Date.now(), date:new Date().toISOString()
+      name,stage:bestStage,timestamp:Date.now(),date:new Date().toISOString()
     });
     myRankId=ref.id;
     document.getElementById('nameInput').value='';
     showRankPopup();
-  }catch(e){
-    errEl.style.display='block';
-  }finally{
-    btn.disabled=false; btn.textContent='🏆 등록';
-  }
+  }catch(e){ errEl.style.display='block'; }
+  finally{ btn.disabled=false; btn.textContent='🏆 등록'; }
 }
 
 async function showRankPopup(){
@@ -473,54 +473,31 @@ async function showRankPopup(){
     const myIdx=myRankId?list.findIndex(r=>r.id===myRankId):-1;
     let rows=top10.map((r,i)=>{
       const mine=myRankId&&r.id===myRankId;
-      return `<tr class="${mine?'mine':''}">
-        <td>${medals[i]??(i+1+'위')}</td>
-        <td>${r.name}</td>
-        <td>${r.stage}단계</td>
-      </tr>`;
+      return `<tr class="${mine?'mine':''}"><td>${medals[i]??(i+1+'위')}</td><td>${r.name}</td><td>${r.stage}단계</td></tr>`;
     }).join('');
     if(myIdx>=10){
       const r=list[myIdx];
       rows+=`<tr><td colspan="3" style="color:rgba(255,255,255,0.3);text-align:center;padding:4px">···</td></tr>
       <tr class="mine"><td>${myIdx+1}위</td><td>${r.name}</td><td>${r.stage}단계</td></tr>`;
     }
-    body.innerHTML=`<table class="rtable">
-      <thead><tr><th>순위</th><th>닉네임</th><th>최고단계</th></tr></thead>
-      <tbody>${rows}</tbody></table>`;
-    if(myIdx>=0&&myIdx<10){
+    body.innerHTML=`<table class="rtable"><thead><tr><th>순위</th><th>닉네임</th><th>최고단계</th></tr></thead><tbody>${rows}</tbody></table>`;
+    if(myIdx>=0&&myIdx<10)
       body.innerHTML+=`<div style="text-align:center;color:#ffd60a;margin-top:10px;font-size:0.85em">👈 내 기록: ${myIdx+1}위</div>`;
-    }
   }catch(e){
-    body.innerHTML=`<div class="no-rank" style="color:#ef476f">
-      불러오지 못했습니다.<br><small>${e.message}</small><br>
-      <button onclick="showRankPopup()" style="margin-top:8px;padding:6px 16px;background:#ef476f;color:white;border:none;border-radius:6px;cursor:pointer">🔄 다시 시도</button>
-    </div>`;
+    body.innerHTML=`<div class="no-rank" style="color:#ef476f">불러오지 못했습니다.<br><small>${e.message}</small><br>
+      <button onclick="showRankPopup()" style="margin-top:8px;padding:6px 16px;background:#ef476f;color:white;border:none;border-radius:6px;cursor:pointer">🔄 다시 시도</button></div>`;
   }
 }
 
-// ── 이벤트 바인딩 ─────────────────────────────────────
-document.getElementById('startBtn').addEventListener('click',()=>{
-  if(!gameOver&&stage>0) return; // 이미 진행 중
-  startGame();
-});
-document.getElementById('endBtn').addEventListener('click',()=>{
-  if(stage===0||gameOver) return;
-  endGame();
-});
+document.getElementById('startBtn').addEventListener('click',()=>{ if(!gameOver&&stage>0)return; startGame(); });
+document.getElementById('endBtn').addEventListener('click',()=>{ if(stage===0||gameOver)return; endGame(); });
 document.getElementById('retryBtn').addEventListener('click',retryStage);
 document.getElementById('restartBtn').addEventListener('click',startGame);
 document.getElementById('submitBtn').addEventListener('click',submitRanking);
 document.getElementById('rankBtn').addEventListener('click',showRankPopup);
-document.getElementById('closeRank').addEventListener('click',()=>{
-  document.getElementById('rankOverlay').classList.remove('show');
-});
-document.getElementById('rankOverlay').addEventListener('click',e=>{
-  if(e.target===document.getElementById('rankOverlay'))
-    document.getElementById('rankOverlay').classList.remove('show');
-});
-document.getElementById('nameInput').addEventListener('keydown',e=>{
-  if(e.key==='Enter') submitRanking();
-});
+document.getElementById('closeRank').addEventListener('click',()=>document.getElementById('rankOverlay').classList.remove('show'));
+document.getElementById('rankOverlay').addEventListener('click',e=>{ if(e.target===document.getElementById('rankOverlay')) document.getElementById('rankOverlay').classList.remove('show'); });
+document.getElementById('nameInput').addEventListener('keydown',e=>{ if(e.key==='Enter') submitRanking(); });
 </script>
 </body>
 </html>
