@@ -186,15 +186,14 @@ function playKalimba(idx){
 }
 
 // ── 피아노 배경음악 ───────────────────────────────
-// C장조 잔잔한 멜로디 루프
+// 숲속 느낌의 Am 펜타토닉 + 바람 노이즈
 const BGM = [
-  [261.63,0.5],[293.66,0.5],[329.63,0.5],[392.00,0.5],
-  [440.00,0.5],[392.00,0.5],[349.23,0.5],[329.63,0.5],
-  [293.66,0.5],[261.63,0.8],[246.94,0.5],[261.63,0.5],
-  [293.66,0.5],[329.63,0.5],[392.00,0.8],[392.00,0.5],
-  [440.00,0.5],[493.88,0.5],[523.25,0.8],[440.00,0.5],
-  [392.00,0.5],[349.23,0.5],[329.63,0.5],[293.66,0.8],
-  [261.63,0.6],[293.66,0.4],[329.63,0.6],[261.63,1.0],
+  [220.00,0.8],[246.94,0.6],[261.63,0.9],[293.66,0.7],
+  [329.63,0.8],[293.66,0.6],[261.63,0.9],[246.94,0.7],
+  [220.00,1.0],[196.00,0.8],[220.00,0.7],[261.63,0.9],
+  [293.66,0.8],[329.63,0.7],[293.66,1.0],[261.63,0.8],
+  [246.94,0.7],[220.00,0.9],[196.00,0.8],[174.61,1.2],
+  [196.00,0.7],[220.00,0.8],[246.94,0.7],[261.63,1.0],
 ];
 let bgmOn=false, bgmTid=null, bgmIdx=0;
 
@@ -204,22 +203,39 @@ function playPianoNote(){
   bgmIdx++;
   const now=audioCtx.currentTime;
   const master=audioCtx.createGain();
-  master.gain.setValueAtTime(0.28,now);
+  master.gain.setValueAtTime(0.42,now);
   master.connect(audioCtx.destination);
-  // 사인 + 삼각파 → 피아노 톤
+
+  // 메인 사인파 (피아노 바디)
   const o1=audioCtx.createOscillator(), g1=audioCtx.createGain();
   o1.type='sine'; o1.frequency.setValueAtTime(freq,now);
-  g1.gain.setValueAtTime(0.7,now);
-  g1.gain.exponentialRampToValueAtTime(0.001,now+dur+0.5);
+  g1.gain.setValueAtTime(0.8,now);
+  g1.gain.exponentialRampToValueAtTime(0.001,now+dur+0.8);
   o1.connect(g1); g1.connect(master);
-  o1.start(now); o1.stop(now+dur+0.6);
+  o1.start(now); o1.stop(now+dur+0.9);
 
+  // 삼각파 (따뜻한 배음)
   const o2=audioCtx.createOscillator(), g2=audioCtx.createGain();
   o2.type='triangle'; o2.frequency.setValueAtTime(freq,now);
-  g2.gain.setValueAtTime(0.3,now);
-  g2.gain.exponentialRampToValueAtTime(0.001,now+dur*0.4);
+  g2.gain.setValueAtTime(0.25,now);
+  g2.gain.exponentialRampToValueAtTime(0.001,now+dur*0.5);
   o2.connect(g2); g2.connect(master);
-  o2.start(now); o2.stop(now+dur*0.4+0.1);
+  o2.start(now); o2.stop(now+dur*0.5+0.1);
+
+  // 2배음 (맑은 하이톤)
+  const o3=audioCtx.createOscillator(), g3=audioCtx.createGain();
+  o3.type='sine'; o3.frequency.setValueAtTime(freq*2,now);
+  g3.gain.setValueAtTime(0.08,now);
+  g3.gain.exponentialRampToValueAtTime(0.001,now+dur*0.3);
+  o3.connect(g3); g3.connect(master);
+  o3.start(now); o3.stop(now+dur*0.3+0.1);
+
+  // 리버브 효과 (딜레이로 공간감)
+  const delay=audioCtx.createDelay(0.5);
+  const delayGain=audioCtx.createGain();
+  delay.delayTime.setValueAtTime(0.25,now);
+  delayGain.gain.setValueAtTime(0.18,now);
+  g1.connect(delay); delay.connect(delayGain); delayGain.connect(master);
 
   bgmTid=setTimeout(playPianoNote, dur*1000);
 }
@@ -228,7 +244,9 @@ function startBgm(){
   bgmOn=false;
   if(bgmTid){ clearTimeout(bgmTid); bgmTid=null; }
   bgmOn=true; bgmIdx=0;
-  audioCtx.resume().then(()=>{ if(bgmOn) playPianoNote(); });
+  audioCtx.resume().then(()=>{
+    if(bgmOn){ playPianoNote(); }
+  });
 }
 function stopBgm(){
   bgmOn=false;
